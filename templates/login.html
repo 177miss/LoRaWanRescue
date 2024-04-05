@@ -1,0 +1,47 @@
+<!-- login.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/plugins/bootstrap-5.3.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <script src="/static/plugins/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" href="/static/images/zy.png" />
+    <title>login</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row top-blank"></div>
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-offset-3 col-lg-6">
+                <!-- form-horizontal: 登录框 -->
+                <!-- method是请求方式，action指明将请求提交到哪个链接 -->
+                <form class="form-horizontal" method="post" action="/index/">
+                    <!-- django项目中的表单必须有这个标签 -->
+                    {% csrf_token %}
+                    <span class="heading">应急救援服务平台</span>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="id" placeholder="昵称" id="txt1" autocomplete="off">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="form-group help">
+                        <input type="password" class="form-control" name="pwd" placeholder="密码" id="txt2">
+                        <i class="fa fa-lock"></i>
+                        <a href="#" class="fa fa-question-circle"></a>
+                    </div>
+                    <!-- 单选框左对齐 -->
+                    <div class="form-group" style="height: 41px; text-align:start;">
+                        <!-- 点击按钮后表单信息被发送出去 -->
+                        <button type="submit" class="btn">登录</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

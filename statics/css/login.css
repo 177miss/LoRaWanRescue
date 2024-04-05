@@ -1,0 +1,135 @@
+/* login.css */
+
+body {
+    background-image: url(../images/jg.png);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+img {
+    background-image: url(../images/map.png);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.form-horizontal {
+    background: rgba(255, 255, 255, 0.1);
+    padding-bottom: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 2px 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+.form-horizontal:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 7px 7px 7px -3px rgba(0, 0, 0, 0.2);
+}
+
+.form-horizontal .heading {
+    display: block;
+    font-size: 35px;
+    font-weight: 700;
+    padding: 35px 0;
+    /* border-bottom: 1px solid #f0f0f0; */
+    margin-bottom: 30px;
+    color: #f0f0f0;
+}
+
+.form-horizontal .form-group {
+    padding: 0 40px;
+    margin: 0 0 25px 0;
+    position: relative;
+}
+
+.form-horizontal .form-control {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    box-shadow: none;
+    padding: 0 20px 0 45px;
+    height: 40px;
+    transition: all 0.3s ease 0s;
+}
+
+.form-horizontal .form-control:focus {
+    background: #e0e0e0;
+    box-shadow: none;
+    outline: 0 none;
+}
+
+.form-horizontal .form-group i {
+    position: absolute;
+    top: 12px;
+    left: 60px;
+    font-size: 17px;
+    color: #c8c8c8;
+    transition: all 0.5s ease 0s;
+}
+
+.form-horizontal .form-control:focus+i {
+    color: rgb(240, 240, 240);
+}
+
+.form-horizontal .fa-question-circle {
+    display: inline-block;
+    position: absolute;
+    top: 12px;
+    right: 60px;
+    font-size: 20px;
+    color: #808080;
+    transition: all 0.5s ease 0s;
+}
+
+
+/* .form-horizontal .fa-question-circle:hover {
+    color: #000;
+} */
+
+.form-horizontal .text {
+    float: left;
+    margin-left: 7px;
+    line-height: 20px;
+    padding-top: 5px;
+    text-transform: capitalize;
+}
+
+.form-horizontal .form-group .btn {
+    float: right;
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    /* background: #00b4ef; */
+    background: rgb(62, 67, 74);
+    border-radius: 30px;
+    padding: 10px 25px;
+    border-left: 10px;
+    border: none;
+    text-transform: capitalize;
+    transition: all 0.5s ease 0s;
+}
+
+.form-horizontal .form-group .btn:hover {
+    background: rgba(62, 67, 74, 0.7);
+}
+
+@media only screen and (max-width: 479px) {
+    .form-horizontal .form-group {
+        padding: 0 25px;
+    }
+    .form-horizontal .form-group i {
+        left: 45px;
+    }
+    .form-horizontal .btn {
+        padding: 10px 20px;
+    }
+}
+
+.top-blank {
+    height: 200px;
+    width: 100%;
+}

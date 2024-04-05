@@ -1,0 +1,19 @@
+.base_station {
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    color: black;
+    top:20px;
+    left: 10px;
+}
+
+table {
+    /* 表格固定布局 */
+    table-layout: fixed;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+#right-tbody {
+    height: 440px;
+}

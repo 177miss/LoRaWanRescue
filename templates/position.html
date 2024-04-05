@@ -1,0 +1,93 @@
+
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>应急救援服务平台</title>
+
+<script type="text/javascript" src="/static/js/echarts.min.js"></script>
+<script type="text/javascript" src="/static/js/china.js"></script>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="stylesheet" href="/static/plugins/bootstrap-5.3.0-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/index.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="stylesheet" href="/static/css/position.css">
+<link rel="shortcut icon" href="/static/images/zy.png" />
+<script src="/static/plugins/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/plugins/jquery-3.6.0.min.js"></script>
+<script src="/static/plugins/jquery.table2excel.js"></script>
+<script src="/static/js/show_admin.js"></script>
+</head>
+<body>
+	<div class="head clearfix">
+		<h1 class="pulll_left">应急救援服务平台</h1>
+		<div class="menu menu2 pulll_left">
+			<ul>      
+				<li><a href="/show_situation_map">概览页面</a></li>
+				<li><a href="/show_message">报警监控</a></li>
+                <li><a href="/show_map">救援地图</a></li>
+				<li><a href="/show_users">连接管理</a></li>
+				<li><a href="/show_management">系统管理</a></li>
+				<li><a href="/show_log">系统日志</a></li>
+			</ul>
+		</div>
+		<div class="time" id="showTime">2018/6/12 17:00:12</div>
+	</div>
+	
+	<div class="mainbox">
+		<ul class="clearfix nav1"> 
+			<li style="width: 70%;">
+				<div class="box">
+                    <div id="tm" class="tit">目标地图</div>
+					<div id="img" class="boxnav mapc" style="height: 784px; position: relative">
+                    </div>
+				</div>
+			</li>
+			<li style="width: 30%">
+				<div class="box">
+					<div id="tm" class="tit">位置信息</div>
+					<div class="boxnav" id="echart4" style="height: 410px">
+                        <div id="tm" class="address">{{address}}</div>
+                    </div>
+				</div>
+				<div class="box">
+					<div id="tm" class="tit">目标天气</div>
+                    
+					<div class="boxnav" style="height: 315px;" id="echart5" >
+                        <div id="tm" class="weather">
+                            <p>{{city}}</p>
+                            <p>{{weather}}</p>
+                            <p>温度：{{temperature}}℃</p>
+                            <p>湿度：{{humidity}}%</p>
+                            <p>{{winddirection}}风&nbsp</p>
+                            <p>风力{{windpower}}级</p>
+                        </div>
+                    </div>
+				</div>
+			</li>
+		</ul>
+		
+		
+		
+		<script>
+			var t = null;
+			t = setTimeout(time,1000);//開始运行
+			function time()
+			{
+				clearTimeout(t);//清除定时器
+				dt = new Date();
+				var y=dt.getFullYear();
+				var mt=dt.getMonth()+1;
+				var day=dt.getDate();
+				var h=dt.getHours();//获取时
+				var m=dt.getMinutes();//获取分
+				var s=dt.getSeconds();//获取秒
+				document.getElementById("showTime").innerHTML = y+"/"+mt+"/"+day+" "+h+":"+m+":"+s+"";
+				t = setTimeout(time,1000); //设定定时器，循环运行     
+			} 
+		</script>
+	</div>
+</body>
+</html>

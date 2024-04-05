@@ -1,0 +1,613 @@
+
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>应急救援服务平台</title>
+
+<script type="text/javascript" src="/static/js/echarts.min.js"></script>
+<script type="text/javascript" src="/static/js/china.js"></script>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="stylesheet" href="/static/plugins/bootstrap-5.3.0-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/index.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="shortcut icon" href="/static/images/zy.png" />
+<script src="/static/plugins/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/plugins/jquery-3.6.0.min.js"></script>
+<script src="/static/plugins/jquery.table2excel.js"></script>
+<script src="/static/js/show_admin.js"></script>
+</head>
+<body>
+	<div class="head clearfix">
+		<h1 class="pulll_left">应急救援服务平台</h1>
+		<div class="menu menu2 pulll_left">
+			<ul>      
+				<li><a href="/show_situation_map">概览页面</a></li>
+				<li><a href="/show_message">报警监控</a></li>
+                <li><a href="/show_map">救援地图</a></li>
+				<li><a href="/show_users">连接管理</a></li>
+				<li><a href="/show_management">系统管理</a></li>
+				<li><a href="/show_log">系统日志</a></li>
+			</ul>
+		</div>
+		<div class="time" id="showTime">2018/6/12 17:00:12</div>
+	</div>
+	
+	<div class="mainbox">
+		<ul class="clearfix nav1">
+			<li style="width: 70%;">
+				<div class="box">
+                    <div id="tm" class="tit">救援地图</div>
+					<div class="boxnav mapc" style="height: 784px; position: relative">
+                        <div id="right-content">
+                            <!--救援地图-->
+            <div id="container" style="width: 125% ;height: 110%;">
+                <script type="text/javascript">
+                    window._AMapSecurityConfig = {
+                      securityJsCode:"1cea1c2420d1bac49d7923c2b0838dbe",
+                    }
+                </script>
+                <script src="https://webapi.amap.com/loader.js"></script>
+                <script type="text/javascript" >
+					var client;
+
+					function loadData() {
+						var request = new XMLHttpRequest();
+						request.open('GET', '/client_api/', true);
+						//request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						request.onreadystatechange = function() {
+							if (this.readyState === 4 && this.status === 200) {
+								var data = JSON.parse(JSON.parse(this.responseText));
+								client = data
+								//console.log(client[0].fields.C_type)
+							}
+						};
+						request.send();
+					}
+					loadData()
+					
+					function loadWeather(C_latitude,C_longitude) {
+						var request = new XMLHttpRequest();
+						var url = '/weather_api/?x=' + C_latitude + '&y=' + C_longitude;
+						
+						request.open('GET', url, true);
+						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						request.onreadystatechange = function() {
+							if (this.readyState === 4 && this.status === 200) {
+								var data = JSON.parse(JSON.parse(this.responseText));
+								console.log(data)
+								console.log('地址:',data.address)
+								if(document.getElementById('address') != null)
+								{
+								document.getElementById('address').innerHTML = '地址：' + data.address;
+								}
+								if (document.getElementById('temperature') != null)
+								{
+								document.getElementById('temperature').innerHTML = '温度：' + data.temperature + '°C';
+								}
+								if (document.getElementById('weather') != null)
+								{
+								document.getElementById('weather').innerHTML= '天气：' + data.weather;
+								}
+								if (document.getElementById('humidity') != null)
+								{
+								document.getElementById('humidity').innerHTML = '湿度：' + data.humidity + '%';
+								}
+								if (document.getElementById('wind') != null)
+								{
+								document.getElementById('wind').innerHTML = '风速：' + data.windpower + ' ' + data.winddirection;
+								}
+								if (document.getElementById('city') != null)
+								{
+								document.getElementById('city').innerHTML = '城市：' + data.province + " " + data.city;
+								}
+							}
+						};
+						request.send();
+					}
+
+					function handleMapType(type = 0)
+					{
+						if (type == 1)
+						{
+							AMapLoader.load({
+                        key: "b387593c177d8ef9a4fb9529e7452d6f",       // 申请好的Web端开发者Key，首次调用 load 时必填
+                        version: "2.0",                 // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+                    }).then((AMap)=>{
+                        // 创建卫星图层
+                        var satellite = new AMap.TileLayer.Satellite();
+                        // 创建路网图层
+                        var roadNet = new AMap.TileLayer.RoadNet();
+							const map = new AMap.Map('container', {
+                        
+						layers: [
+							satellite
+						]
+					});
+						for (var i=0;i<client.length;i++)
+						{
+							
+							if (client[i].fields.C_type == "求救人员"){
+							const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：求救人员';
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+							
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							}
+							else{
+								const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：救援人员';
+								}
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							}
+							
+						}
+                            
+                    }).catch((e)=>{
+                        console.error(e);  //加载错误提示
+                    });
+						}
+						else if (type == 2)
+						{
+							AMapLoader.load({
+                        key: "b387593c177d8ef9a4fb9529e7452d6f",       // 申请好的Web端开发者Key，首次调用 load 时必填
+                        version: "2.0",                 // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+                    }).then((AMap)=>{
+                        // 创建卫星图层
+                        var satellite = new AMap.TileLayer.Satellite();
+                        // 创建路网图层
+                        var roadNet = new AMap.TileLayer.RoadNet();
+							const map = new AMap.Map('container', {
+                        
+						layers: [
+							roadNet
+						]
+					});
+						for (var i=0;i<client.length;i++)
+						{
+							if (client[i].fields.C_type == "求救人员"){
+							const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：求救人员';
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							}
+							else{
+								const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：救援人员';
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							}
+							
+						}
+                            
+                    }).catch((e)=>{
+                        console.error(e);  //加载错误提示
+                    });
+						}
+						else if (type == 3)
+						{
+							AMapLoader.load({
+                        key: "b387593c177d8ef9a4fb9529e7452d6f",       // 申请好的Web端开发者Key，首次调用 load 时必填
+                        version: "2.0",                 // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+                    }).then((AMap)=>{
+                        // 创建卫星图层
+                        var satellite = new AMap.TileLayer.Satellite();
+                        // 创建路网图层
+                        var roadNet = new AMap.TileLayer.RoadNet();
+							const map = new AMap.Map('container', {
+                        
+						layers: [
+							satellite,
+							roadNet
+						]
+					});
+                        
+						for (var i=0;i<client.length;i++)
+						{
+							if (client[i].fields.C_type == "求救人员"){
+							const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：求救人员' ;
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							
+							}
+							else{
+								const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：救援人员';
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							
+							}
+						}
+                            
+                    }).catch((e)=>{
+                        console.error(e);  //加载错误提示
+                    });
+						}
+						else if (type == 0)
+						{
+							AMapLoader.load({
+                        key: "b387593c177d8ef9a4fb9529e7452d6f",       // 申请好的Web端开发者Key，首次调用 load 时必填
+                        version: "2.0",                 // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+                    }).then((AMap)=>{
+						var layer = new AMap.createDefaultLayer({
+						zooms: [3,20],    // 可见级别
+						visible: true,    // 是否可见
+						opacity: 1,       // 透明度
+						zIndex: 0         // 叠加层级
+						})
+						// 将图层添加到地图
+						var map = new AMap.Map('container',{
+						layers: [layer]
+						});
+                        
+						for (var i=0;i<client.length;i++)
+						{
+							console.log(typeof client[i].fields.C_type)
+							if (client[i].fields.C_type == "求救人员"){
+							const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：求救人员';
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							
+							},{passive:true});
+							}
+							else{
+								const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：救援人员';
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							}
+						}
+                            
+                    }).catch((e)=>{
+                        console.error(e);  //加载错误提示
+                    });
+						}
+						else if (type == 4)
+						{
+							AMapLoader.load({
+                        key: "b387593c177d8ef9a4fb9529e7452d6f",       // 申请好的Web端开发者Key，首次调用 load 时必填
+                        version: "2.0",                 // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+                    }).then((AMap)=>{
+                        // 创建卫星图层
+                        var satellite = new AMap.TileLayer.Satellite();
+                        // 创建路网图层
+                        var roadNet = new AMap.TileLayer.RoadNet();
+						var traffic = new AMap.TileLayer.Traffic({
+						'autoRefresh': true, // 是否自动刷新，默认为false
+						'interval': 180,     // 刷新间隔，默认180s
+						});
+							const map = new AMap.Map('container', {
+                        
+						layers: [
+							traffic
+						]
+					});
+                        
+						for (var i=0;i<client.length;i++)
+						{
+							if (client[i].fields.C_type == "求救人员"){
+							const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：求救人员';
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							}
+							else{
+								const marker = new AMap.Marker(
+								{
+									position:[client[i].fields.C_longitude,client[i].fields.C_latitude],
+									extData:
+									{
+										C_latitude : client[i].fields.C_latitude,
+										C_longitude : client[i].fields.C_longitude
+									},
+									icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png' // 内置蓝色标点图标
+								}
+							)
+							map.add(marker)
+							marker.on('click', function(event) {
+							var clickedMarker = event.target; // 获取被点击的点标记对象
+							if (document.getElementById('type') != null)
+								{
+								document.getElementById('type').innerHTML = '用户类型：救援人员' ;
+								}
+
+							// 获取标记相关信息
+							var C_latitude = clickedMarker.getExtData().C_latitude;
+							var C_longitude = clickedMarker.getExtData().C_longitude;
+
+							console.log('额外信息：', C_latitude,C_longitude);
+							loadWeather(C_latitude,C_longitude);
+							},{passive:true});
+							}
+						}
+                            
+                    }).catch((e)=>{
+                        console.error(e);  //加载错误提示
+                    });
+						}
+					}
+                    handleMapType(0)
+                </script>
+                <style>
+                    #container {
+                      width: 110%;
+                      height: 100%;
+                    }
+                </style>
+
+            </div>
+
+
+
+					</div>
+				</div>
+			</li> 
+			<li style="width: 30%">
+				<div class="box">
+					<div id="tm" class="tit">图层选择</div>
+					<div class="boxnav" id="echart4" style="height: 410px">
+						<td id="tm">
+							<button type="submit" class="btn btn-primary" onclick="handleMapType(0)">标准地图</button>
+						</td>
+						<p></p>
+						<td id="tm">
+								<button type="submit" class="btn btn-primary" onclick="handleMapType(1)">卫星地图</button>
+						</td>
+						<p></p>
+						<td id="tm">
+								<button type="submit" class="btn btn-primary" onclick="handleMapType(2)">路网地图</button>
+						</td>
+						
+						<p></p>
+						<td id="tm">
+								<button type="submit" class="btn btn-primary" onclick="handleMapType(4)">交通地图</button>
+						</td>
+						<p></p>
+						<td id="tm">
+							<button type="submit" class="btn btn-primary" onclick="handleMapType(3)">卫星路网</button>
+						</td>
+					</div>
+				</div>
+				<div class="box">
+					<div id="tm" class="tit">目标信息</div>
+					<div class="boxnav" style="height: 315px;" id="tm" >
+							<div id = "type">用户类型：</div>
+							<p></p>
+							<div id = "city">城市：</div>
+							<p></p>
+							<div id = "address">地址：</div>
+							<p></p>
+							<div id = "temperature">温度：</div>
+							<p></p>
+							<div id = "weather">天气：</div>
+							<p></p>
+							<div id = "wind">风速：</div>
+							<p></p>
+							<div id = "humidity">湿度：</div>
+					</div>
+				</div>
+			</li>
+			
+		</ul>
+		
+		
+		
+		<script>
+			var t = null;
+			t = setTimeout(time,1000);//開始运行
+			function time()
+			{
+				clearTimeout(t);//清除定时器
+				dt = new Date();
+				var y=dt.getFullYear();
+				var mt=dt.getMonth()+1;
+				var day=dt.getDate();
+				var h=dt.getHours();//获取时
+				var m=dt.getMinutes();//获取分
+				var s=dt.getSeconds();//获取秒
+				document.getElementById("showTime").innerHTML = y+"/"+mt+"/"+day+" "+h+":"+m+":"+s+"";
+				t = setTimeout(time,1000); //设定定时器，循环运行     
+			} 
+		</script>
+	</div>
+</body>
+</html>

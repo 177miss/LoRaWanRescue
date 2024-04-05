@@ -1,0 +1,258 @@
+
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>应急救援服务平台</title>
+
+<script type="text/javascript" src="/static/js/echarts.min.js"></script>
+<script type="text/javascript" src="/static/js/china.js"></script>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="stylesheet" href="/static/plugins/bootstrap-5.3.0-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/index.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="shortcut icon" href="/static/images/zy.png" />
+<script src="/static/plugins/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/plugins/jquery-3.6.0.min.js"></script>
+<script src="/static/plugins/jquery.table2excel.js"></script>
+<script src="/static/js/show_admin.js"></script>
+</head>
+<body>
+	<div class="head clearfix">
+		<h1 class="pulll_left">应急救援服务平台</h1>
+		<div class="menu menu2 pulll_left">
+			<ul>      
+				<li><a href="/show_situation_map">概览页面</a></li>
+				<li><a href="/show_message">报警监控</a></li>
+                <li><a href="/show_map">救援地图</a></li>
+				<li><a href="/show_users">连接管理</a></li>
+				<li><a href="/show_management">系统管理</a></li>
+				<li><a href="/show_log">系统日志</a></li>
+			</ul>
+		</div>
+		<div class="time" id="showTime">2018/6/12 17:00:12</div>
+	</div>
+	<script>
+            function loadWeather(C_latitude,C_longitude) {
+						var request = new XMLHttpRequest();
+						var url = '/map_api/?x=' + C_latitude + '&y=' + C_longitude;
+						
+						request.open('GET', url, true);
+						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						request.onreadystatechange = function() {
+							if (this.readyState === 4 && this.status === 200) {
+								var data = JSON.parse(JSON.parse(this.responseText));
+								console.log(data)
+								console.log('地址:',data.address)
+								if(document.getElementById('address') != null)
+								{
+								document.getElementById('address').innerHTML = '地址：' + data.address;
+								}
+								if (document.getElementById('temperature') != null)
+								{
+								document.getElementById('temperature').innerHTML = '温度：' + data.temperature + '°C';
+								}
+								if (document.getElementById('weather') != null)
+								{
+								document.getElementById('weather').innerHTML= '天气：' + data.weather;
+								}
+								if (document.getElementById('humidity') != null)
+								{
+								document.getElementById('humidity').innerHTML = '湿度：' + data.humidity + '%';
+								}
+								if (document.getElementById('wind') != null)
+								{
+								document.getElementById('wind').innerHTML = '风速：' + data.windpower + ' ' + data.winddirection;
+								}
+								if (document.getElementById('city') != null)
+								{
+								document.getElementById('city').innerHTML = '城市：' + data.province + " " + data.city;
+								}
+							}
+						};
+						request.send();
+					}
+     </script>
+	<div class="mainbox">
+		<ul class="clearfix nav1"> 
+			<li style="width: 70%;">
+				<div class="box">
+                    <div id="tm" class="tit">消息列表</div>
+					<div class="boxnav mapc" style="height: 784px; position: relative">
+                        <div id="right-content">
+                            <div style="width: 100%; height: 90px;">
+                                <form method="post" action="/show_message/" name="form_search">
+                                    {% csrf_token %}
+                                    <div style="width: 100%; height: 45px;"></div>
+                                    <div class="input-group">
+                                        <select id="tm" name="opt-srch" onchange="change_placeholder(this)">
+                                            <option id="opt-IP" value="IP" selected>&nbsp;&nbsp;用&nbsp;户&nbsp;</option>
+                                            <option id="opt-time" value="Time">&nbsp;&nbsp;时&nbsp;间&nbsp;</option>
+                                            <option id="opt-text"  value="Text" >&nbsp;&nbsp;消&nbsp;息&nbsp;</option>
+                                        </select>
+                                        <input id="tm" type="text" name="opt" class="form-input" placeholder="请输入用户" value="" style="display: inline-block;">
+                                        <span class="input-group-btn">
+                                            <input id="tm" type="submit" class="btn btn-secondary" value="筛选" style="box-shadow: none;">
+                                        </span>
+                
+                                    </div>
+                                </form>
+                            </div>
+                
+                        <div id="right-content">
+                
+                            <div name="form-message" style="padding-left: 10%;" id="excel-out">
+                                <div id="right-thead">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <p>
+                                                <td id = "tm" style = "width: 50px;"></td>
+                                                <td id="tm" style = "width: 200px;">时间</td>
+                                                <td id="tm" style = "width: 200px;">用户</td>
+                                                <td id="tm" style = "width: 200px;">消息</td>
+                                            </p>
+                                        </thead>
+                                    </table>
+                                </div>
+                                <div id="right-tbody" class="sroll-container">
+                                    <table class="table table-hover">
+                                        {% for Message in table_Message%}
+                                            <tr id = "click_message_{{ forloop.counter }}">
+                                                <td id="tm" style="padding-top: 10px; width: 200px;">{{ Message.Time }}</td>
+                                                <td id="tm" style="padding-top: 10px; width: 200px;">{{ Message.Client }}</td>
+                                                <td id="tm" style="padding-top: 10px; width: 200px;">{{ Message.Text }}</td>
+                                                <td id="latitude_{{ forloop.counter }}" style="display:none;">{{ Message.latitude }}</td>
+                                                <td id="longitude_{{ forloop.counter }}" style="display:none;">{{ Message.longitude }}</td>
+                                                <td id="tm"><button type="button" class="btn btn-primary delete-btn" data-record-id="{{ Message.id }}">删除</button></td>
+                                                <td id="tm">
+                                                        <form  method="post" action="/show_gateway/" name="form-station">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="Client" value={{Message.Client}}>
+                                                            <input type="hidden" name="Eui" value={{Message.Eui}}>
+                                                            <button type="submit" class="btn btn-primary" >网关</button>
+                                                        </form>
+                                                </td>
+                                                <td id="tm">
+                                                    <form method= "post" action= "/position/" name="position">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="x" value="{{Message.latitude}}">
+                                                        <input type="hidden" name="y" value="{{Message.longitude}}">
+                                                        <button type="submit" class="btn btn-primary">定位</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            <script>
+
+                                                var item = document.getElementById("click_message_{{ forloop.counter }}");
+                                                item.addEventListener("click",function()
+                                                {
+                                                    var latitude = document.getElementById("latitude_{{ forloop.counter }}").innerHTML
+                                                    var longitude = document.getElementById("longitude_{{ forloop.counter }}").innerHTML
+                                                    console.log(latitude,longitude);
+                                                    loadWeather(latitude,longitude);
+                                                    // 获取目标位置的父元素
+                                                    var parentElement = document.getElementById('map_insert');
+
+                                                    // 创建 <img> 元素/static/images/map.jpg
+                                                    var imgElement = document.createElement('img');
+                                                    imgElement.src = "/static/images/map.jpg?t={{ timestamp }}";
+                                                    // 找到目标位置的父元素
+                                                    
+                                                    // 检查目标位置是否已经存在子元素，如果存在则先移除所有子元素
+                                                    if (parentElement.firstChild) {
+                                                    parentElement.removeChild(parentElement.firstChild);
+                                                    }
+
+                                                    // 将图片元素插入到目标位置的父元素中
+                                                    parentElement.appendChild(imgElement);
+													
+
+                                                });
+                                            </script>
+                                            {% endfor %}
+                                            
+                                    </table>
+									<script>
+										$(document).ready(function() {
+											$(".delete-btn").click(function() {
+												var recordId = $(this).data("record-id");
+												
+												// 使用 AJAX 发送删除请求
+												$.ajax({
+													type: "POST",
+													url: "/delete_message/",
+													data: {
+														'record_id': recordId,
+														'csrfmiddlewaretoken': '{{ csrf_token }}'
+													},
+													success: function(response) {
+														// 删除成功，移除对应行记录
+														$("#row_" + recordId).remove();
+														alert("删除成功！")
+													},
+													error: function(xhr, status, error) {
+														// 处理错误响应
+														console.log(error);
+													}
+												});
+											});
+										});
+										</script>
+
+                                </div>
+                            </div>
+					</div>
+				</div>
+			</li>
+			<li style="width: 30%">
+				<div class="box">
+					<div id="tm" class="tit" >地图预览</div>
+					<div class="boxnav" style="height: 410px">
+                        <div id="map_insert" >
+                            
+                        </div>
+                    </div>
+				</div>
+				<div class="box">
+					<div id="tm" class="tit">目标信息</div>
+					<div class="boxnav" style="height: 315px;" id="tm" >
+							<div id = "city"></div>
+							<p></p>
+							<div id = "address"></div>
+							<p></p>
+							<div id = "temperature"></div>
+							<p></p>
+							<div id = "weather"></div>
+							<p></p>
+							<div id = "wind"></div>
+							<p></p>
+							<div id = "humidity"></div>
+					</div>
+				</div>
+			</li>
+		</ul>
+		
+		
+		
+		<script>
+			var t = null;
+			t = setTimeout(time,1000);//開始运行
+			function time()
+			{
+				clearTimeout(t);//清除定时器
+				dt = new Date();
+				var y=dt.getFullYear();
+				var mt=dt.getMonth()+1;
+				var day=dt.getDate();
+				var h=dt.getHours();//获取时
+				var m=dt.getMinutes();//获取分
+				var s=dt.getSeconds();//获取秒
+				document.getElementById("showTime").innerHTML = y+"/"+mt+"/"+day+" "+h+":"+m+":"+s+"";
+				t = setTimeout(time,1000); //设定定时器，循环运行     
+			} 
+		</script>
+	</div>
+</body>
+</html>

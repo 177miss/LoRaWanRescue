@@ -1,0 +1,91 @@
+.input-group {
+    padding-left: 10%;
+    padding-right: 0px;
+}
+
+span .btn-secondary {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    font-weight: 700;
+    
+}
+
+.form-input {
+    border: none;
+    border: 1px solid rgb(206, 212, 218);
+    outline: none;
+    border-color: rgb(206, 212, 218);
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    width: 200px;
+}
+
+.form-input:focus {
+    /* border-color: rgb(108, 117, 125); */
+    border-color: rgb(206, 212, 218);
+    box-shadow: none;
+}
+
+select {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    border-color: rgb(206, 212, 218);
+    /* 用于去掉选择菜单项时出现的黑框 */
+    outline: none;
+}
+
+.btn-group {
+    margin-left: 590px!important;
+}
+
+.modal {
+    /* 模态框向上移 */
+    top: -50px;
+}
+
+table {
+    /* 表格固定布局 */
+    table-layout: fixed;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+.fixed-width {
+    /* 超出部分显示省略号 */
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+}
+
+button {
+    /* 使用important，将其优先级提到最高 */
+    box-shadow: none!important;
+    color: #fff;
+}
+
+.top-function {
+    color: rgba(230, 230, 230, 0.8);
+}
+
+.top-function:hover {
+    color: #fff;
+}
+
+.info-page {
+    color: white;
+    height: 50px;
+    width: 235px;
+    margin-top: 11px;
+    padding-left: 13px;
+    line-height: 45px;
+    font-size: 25px;
+    border: 2px dashed #fff;
+}
+
+textarea {
+    outline: none;
+    border-radius: 5px;
+    border-color: rgb(206, 212, 218);
+}

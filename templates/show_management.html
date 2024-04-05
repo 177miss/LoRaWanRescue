@@ -1,0 +1,496 @@
+
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>应急救援服务平台</title>
+
+<script type="text/javascript" src="/static/js/echarts.min.js"></script>
+<script type="text/javascript" src="/static/js/china.js"></script>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="stylesheet" href="/static/plugins/bootstrap-5.3.0-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/index.css">
+<link rel="stylesheet" href="/static/css/show_admin.css">
+<link rel="shortcut icon" href="/static/images/zy.png" />
+<script src="/static/plugins/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/plugins/jquery-3.6.0.min.js"></script>
+<script src="/static/plugins/jquery.table2excel.js"></script>
+<script src="/static/js/show_admin.js"></script>
+</head>
+<body>
+	<div class="head clearfix">
+		<h1 class="pulll_left">应急救援服务平台</h1>
+		<div class="menu menu2 pulll_left">
+			<ul>      
+				<li><a href="/show_situation_map">概览页面</a></li>
+				<li><a href="/show_message">报警监控</a></li>
+                <li><a href="/show_map">救援地图</a></li>
+				<li><a href="/show_users">连接管理</a></li>
+				<li><a href="/show_management">系统管理</a></li>
+				<li><a href="/show_log">系统日志</a></li>
+			</ul>
+		</div>
+		<div class="time" id="showTime">2018/6/12 17:00:12</div>
+	</div>
+	<script>
+		function set_type(type = 0)
+		{
+			if (type == 0)
+			{
+				document.getElementById("message_table").hidden = true;
+				document.getElementById("user_table").hidden = true;
+				document.getElementById("gateway_table").hidden = true;
+				document.getElementById("client_table").hidden = false;
+				document.getElementById("message_column").hidden = true;
+				document.getElementById("user_column").hidden = true;
+				document.getElementById("gateway_column").hidden = true;
+				document.getElementById("client_column").hidden = false;
+			}
+			else if (type == 1)
+			{
+				document.getElementById("message_table").hidden = false;
+				document.getElementById("user_table").hidden = true;
+				document.getElementById("gateway_table").hidden = true;
+				document.getElementById("client_table").hidden = true;
+				document.getElementById("message_column").hidden = false;
+				document.getElementById("user_column").hidden = true;
+				document.getElementById("gateway_column").hidden = true;
+				document.getElementById("client_column").hidden = true;
+			}
+			else if (type == 2)
+			{
+				document.getElementById("message_table").hidden = true;
+				document.getElementById("user_table").hidden = true;
+				document.getElementById("gateway_table").hidden = false;
+				document.getElementById("client_table").hidden = true;
+				document.getElementById("message_column").hidden = true;
+				document.getElementById("user_column").hidden = true;
+				document.getElementById("gateway_column").hidden = false;
+				document.getElementById("client_column").hidden = true;
+			}
+			else if (type == 3)
+			{
+				document.getElementById("message_table").hidden = true;
+				document.getElementById("user_table").hidden = false;
+				document.getElementById("gateway_table").hidden = true;
+				document.getElementById("client_table").hidden = true;
+				document.getElementById("message_column").hidden = true;
+				document.getElementById("user_column").hidden = false;
+				document.getElementById("gateway_column").hidden = true;
+				document.getElementById("client_column").hidden = true;
+			}
+		}
+	</script>
+	
+	<div class="mainbox">
+		<ul class="clearfix nav1"> 
+			<li style="width: 70%;">
+				<div class="box">
+                    <div id="tm" class="tit">系统管理</div>
+					<div class="boxnav mapc" style="height: 784px; position: relative">
+                        <div id="right-content">
+                
+                            <div name="form-message" style="padding-left: 10%;" id="excel-out">
+                                <div id="right-thead">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr id = "client_column">
+                                                <td id="tm" style="width: 180px;">&nbsp;用户</td>
+                                                <td id="tm" style="width: 180px;">类型</td>
+                                                <td id="tm" style="width: 200px;">上次登录时间</td>
+                                                <td id="tm"></td>
+                                            </tr>
+											<tr id = "message_column">
+                                                <td id="tm" style="width: 200px;">&nbsp;发送时间</td>
+                                                <td id="tm" style="width: 150px;">发送用户</td>
+                                                <td id="tm" style="width: 150px;">消息类型</td>
+												<td id = "tm" style="width: 200px;">消息内容</td>
+                                                <td id="tm"></td>
+                                            </tr>
+											<tr id = "gateway_column">
+                                                <td id="tm" style="width: 200px;">网关</td>
+                                                <td id="tm" style="width: 200px;">纬度</td>
+                                                <td id="tm" style="width: 200px;">经度</td>	
+                                                <td id="tm"></td>
+                                            </tr>
+											<tr id = "user_column">
+                                                <td id="tm" style="width: 150px;">&nbsp;管理员</td>
+                                                <td id="tm" style="width: 150px;">密码</td>
+                                                <td id="tm" style="width: 200px;">上次登录时间</td>
+                                                <td id="tm"></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                                <div id="right-tbody" class="sroll-container">
+                                    <table class="table table-hover" id="message_table">
+										{% for Mes in message %}
+										<tr id="row_{{ Mes.id }}">
+											<td id="tm" style="padding-top: 16px; width: 200px;">{{ Mes.Time }}</td>
+											<td id="tm" style="padding-top: 16px; width: 150px;">{{ Mes.Client }}</td>
+											<td id="tm" style="padding-top: 16px; width: 150px;">{{ Mes.Name }}</td>
+											<td id="tm" style="padding-top: 16px; width: 200px;">{{ Mes.Text }}</td>
+											<td id="tm">
+												<button type="button" class="btn btn-primary delete-btn_mes" data-record-id="{{ Mes.id }}">删除</button>
+											</td>
+											<td id="tm">
+												<form method="post" action="/position/" name="position">
+													{% csrf_token %}
+													<input type="hidden" name="x" value="{{ Mes.latitude }}">
+													<input type="hidden" name="y" value="{{ Mes.longitude }}">
+													<button type="submit" class="btn btn-primary">定位</button>
+												</form>
+											</td>
+										</tr>
+										{% endfor %}
+									</table>
+									
+									<script>
+									$(document).ready(function() {
+										$(".delete-btn_mes").click(function() {
+											var recordId = $(this).data("record-id");
+											
+											// 使用 AJAX 发送删除请求
+											$.ajax({
+												type: "POST",
+												url: "/delete_message/",
+												data: {
+													'record_id': recordId,
+													'csrfmiddlewaretoken': '{{ csrf_token }}'
+												},
+												success: function(response) {
+													// 删除成功，移除对应行记录
+													$("#row_" + recordId).remove();
+													alert("删除成功！")
+												},
+												error: function(xhr, status, error) {
+													// 处理错误响应
+													console.log(error);
+													alert("删除失败！")
+												}
+											});
+										});
+									});
+									</script>
+									
+									<table class="table table-hover" id = "user_table">
+										
+										
+										<script>
+											function showInput() {
+											document.getElementById('inputBox').style.display = 'block';
+											}
+											function tishi()
+											{
+												alert("操作成功！！！");
+												document.getElementById('inputBox').style.display = 'none';
+											}
+										</script>
+										<div id="inputBox" style="display: none;">
+											<input id ="tm" type="text" id="inputText">
+											<button id = "tm" type = "button" onclick="tishi()"  class="btn btn-primary delete-btn" data-record-id="{{ u.id }}">提交</button>
+										</div>
+                                        {% for u in user%}
+                                            <tr>
+                                                <td id="tm" style="padding-top: 16px; width: 150px;">{{ u.id_admin }}</td>
+                                                <td id="tm" style="padding-top: 16px; width: 150px;">{{ u.pwd_admin }}</td>
+												<td id="tm" style="padding-top: 16px; width: 200px;">{{u.Time}}</td>
+                                                <td id="tm">
+													<button type="button" class="btn btn-primary delete-btn_u" data-record-id="{{ u.id }}">删除</button>
+												</td>
+												<td id = "tm"><button type="submit" onclick="tishi()" class="btn btn-primary">权限设置</button></td>
+												<td id = "tm"><button type="submit" onclick="showInput()" class="btn btn-primary">修改密码</button></td>
+                                            </tr>
+                                            {% endfor %}                                          
+                                    </table>
+									<script>
+										$(document).ready(function() {
+											$(".delete-btn").click(function() {
+												var recordId = $(this).data("record-id");
+												var inputText = document.getElementById('inputText').value;
+												alert("修改成功！！！")
+												document.getElementById('inputBox').style.display = 'none';
+												$.ajax({
+													type: "POST",
+													url: "/update_pwd/",
+													data: {
+														'record_id': recordId,
+														"new_pwd": inputText,
+														'csrfmiddlewaretoken': '{{ csrf_token }}'
+													},
+													success: function(response) {
+														alert("修改成功！")
+													},
+													error: function(xhr, status, error) {
+														// 处理错误响应
+														console.log(error);
+														alert("修改失败！")
+													}
+												});
+											});
+										});
+										</script>
+									
+									<script>
+										$(document).ready(function() {
+											$(".delete-btn_u").click(function() {
+												var recordId = $(this).data("record-id");
+												
+												// 使用 AJAX 发送删除请求
+												$.ajax({
+													type: "POST",
+													url: "/delete_user/",
+													data: {
+														'record_id': recordId,
+														'csrfmiddlewaretoken': '{{ csrf_token }}'
+													},
+													success: function(response) {
+														// 删除成功，移除对应行记录
+														$("#row_" + recordId).remove();
+														alert("删除成功！")
+													},
+													error: function(xhr, status, error) {
+														// 处理错误响应
+														console.log(error);
+														alert("删除失败！")
+													}
+												});
+											});
+										});
+										</script>
+									<table class="table table-hover" id = "client_table">
+                                        {% for cli in client%}
+                                            <tr>
+                                                <td id="tm" style="padding-top: 16px; width: 160px;">{{ cli.C_id }}</td>
+                                                <td id="tm" style="padding-top: 16px; width: 160px;">{{ cli.C_type }}</td>
+												<td id="tm" style="padding-top: 16px; width: 200px;">{{ cli.C_lasttime }}</td>
+                                                <td id="tm">
+													<button type="button" class="btn btn-primary delete-btn_cli" data-record-id="{{ cli.id }}">删除</button>
+												</td>
+                                                <td id="tm">
+                                                    <form method= "post" action= "/position/" name="position">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="x" value="{{ cli.latitude }}">
+														<input type="hidden" name="y" value="{{ cli.longitude }}">
+														<button type="submit" class="btn btn-primary">定位</button>
+                                                    </form>
+                                                </td>
+												<td id = "tm">
+													<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_mail">发送消息</button>
+												</td>
+                                            </tr>
+                                            {% endfor %}                                          
+                                    </table>
+									<script>
+										$(document).ready(function() {
+											$(".delete-btn_cli").click(function() {
+												var recordId = $(this).data("record-id");
+												
+												// 使用 AJAX 发送删除请求
+												$.ajax({
+													type: "POST",
+													url: "/delete_client/",
+													data: {
+														'record_id': recordId,
+														'csrfmiddlewaretoken': '{{ csrf_token }}'
+													},
+													success: function(response) {
+														// 删除成功，移除对应行记录
+														$("#row_" + recordId).remove();
+														alert("删除成功！")
+													},
+													error: function(xhr, status, error) {
+														// 处理错误响应
+														console.log(error);
+														alert("删除失败！")
+													}
+												});
+											});
+										});
+										</script>
+									<table class="table table-hover" id = "gateway_table">
+                                        {% for gate in gateway%}
+                                            <tr>
+												<script>
+													function showAlert() {
+													  alert("测试成功，网关情况正常！");
+													}
+													</script>
+                                                <td id="tm" style="padding-top: 16px; width: 200px;">{{ gate.G_id }}</td>
+                                                <td id="tm" style="padding-top: 16px; width: 200px;">{{ gate.latitude }}</td>
+												<td id="tm" style="padding-top: 16px; width: 200px;">{{ gate.longitude }}</td>
+                                                <td id="tm">
+													<button type="button" class="btn btn-primary delete-btn_gate" data-record-id="{{ gate.id }}">删除</button>
+												</td>
+												<td id = "tm"><button onclick="showAlert()" class="btn btn-primary">测试</button></td>
+                                                <td id="tm">
+                                                    <form method= "post" action= "/position/" name="position">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="x" value="{{ gate.latitude }}">
+														<input type="hidden" name="y" value="{{ gate.longitude }}">
+														<button type="submit" class="btn btn-primary">定位</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}                                          
+                                    </table>
+									<script>
+										$(document).ready(function() {
+											$(".delete-btn_gate").click(function() {
+												var recordId = $(this).data("record-id");
+												
+												// 使用 AJAX 发送删除请求
+												$.ajax({
+													type: "POST",
+													url: "/delete_gateway/",
+													data: {
+														'record_id': recordId,
+														'csrfmiddlewaretoken': '{{ csrf_token }}'
+													},
+													success: function(response) {
+														// 删除成功，移除对应行记录
+														$("#row_" + recordId).remove();
+														alert("删除成功！")
+													},
+													error: function(xhr, status, error) {
+														// 处理错误响应
+														console.log(error);
+														alert("删除失败！")
+													}
+												});
+											});
+										});
+										</script>
+                                </div>
+                                </div>
+                            </div>
+							<script>set_type(0)</script>
+				</div>
+			</li>
+			<li style="width: 30%">
+				<div class="box">
+					<div id="tm" class="tit">管理对象</div>
+					<div class="boxnav" id="tm" style="height: 410px">
+						<td id="tm">
+							<button type="submit" class="btn btn-primary" onclick="set_type(0)">用户对象</button>
+						</td>
+						<p></p>
+						<td id="tm">
+								<button type="submit" class="btn btn-primary" onclick="set_type(1)">消息对象</button>
+						</td>
+						<p></p>
+						<td id="tm">
+								<button type="submit" class="btn btn-primary" onclick="set_type(2)">网关对象</button>
+						</td>
+						
+						<p></p>
+						<td id="tm">
+								<button type="submit" class="btn btn-primary" onclick="set_type(3)">管理员对象</button>
+						</td>
+					</div>
+				</div>
+				<div class="box">
+					<div id="tm" class="tit">系统状态</div>
+					<div class="boxnav" style="height: 315px;" id="tm" >
+							<div id = "num_sos">告警数量：{{ans.num_sos}}</div>
+							<p></p>
+							<div id = "num_client">用户数量：{{ans.num_client}}</div>
+							<p></p>
+							<div id = "num_gateway">网关数量：{{ans.num_gateway}}</div>
+							<p></p>
+							<div id = "num_message">消息数量：{{ans.num_message}}</div>
+							<p></p>
+				</div>
+			</li>
+		</ul>
+		<!-- 模态框，发送邮件 -->
+		<div class="modal" id="modal_mail">
+			<div class="modal-dialog modal-sm modal-dialog-centered">
+				<div class="modal-content">
+
+					<!-- 模态框头部 -->
+					<div class="modal-header">
+						<h4 class="modal-title">发送消息</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<!-- 模态框内容 -->
+					<form  enctype="text/plain" id="mail-form">
+						<div class="modal-body">
+				
+							<textarea name="message" rows="7" cols="30" id="mail-send" ></textarea>
+						</div>
+
+						<!-- 模态框底部 -->
+						<div class="modal-footer" id = "s_m">
+							
+							<button type="submit" class="btn btn-primary delete-btn" data-bs-dismiss="modal">发送消息</button>
+						</div>
+						<script>
+							var submitBtn = document.querySelector("#s_m button"); // 获取按钮元素
+
+							submitBtn.addEventListener("click", function(event) {
+								event.preventDefault(); // 阻止默认的表单提交行为
+								var request = new XMLHttpRequest();
+								var t = document.getElementById("mail-send").value;
+								console.log(t);
+		
+								var url = '/send_message/?text=' + t;
+								
+								request.open('GET', url, true);
+								request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+								request.onreadystatechange = function() {
+									if (this.readyState === 4 && this.status === 200) {
+										alert("发送成功！");
+									}
+								};
+								request.send();
+								
+							
+								
+
+								// 在这里添加发送消息的逻辑
+								// ...
+							});
+							/*var request = new XMLHttpRequest();
+							var t = document.getElementById("mail-send").value;
+							console.log(t);
+							var url = '/send_message/?text=' + t;
+						
+						request.open('GET', url, true);
+						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						request.onreadystatechange = function() {
+							if (this.readyState === 4 && this.status === 200) {
+								alert("发送成功！");
+							}
+						};
+						request.send();*/
+						</script>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>		
+		
+		
+		<script>
+			var t = null;
+			t = setTimeout(time,1000);//開始运行
+			function time()
+			{
+				clearTimeout(t);//清除定时器
+				dt = new Date();
+				var y=dt.getFullYear();
+				var mt=dt.getMonth()+1;
+				var day=dt.getDate();
+				var h=dt.getHours();//获取时
+				var m=dt.getMinutes();//获取分
+				var s=dt.getSeconds();//获取秒
+				document.getElementById("showTime").innerHTML = y+"/"+mt+"/"+day+" "+h+":"+m+":"+s+"";
+				t = setTimeout(time,1000); //设定定时器，循环运行     
+			} 
+		</script>
+	</div>
+</body>
+</html>
