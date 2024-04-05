@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from appExpress.models import users,Message,Gateway,Client
+from appexpress.models import users,Message,Gateway,Client
 from django.http import JsonResponse
 from django.core.serializers import serialize
 from django.shortcuts import redirect
@@ -402,7 +402,7 @@ def management(request):
     return render(request,'show_management.html',{"user":user,"client":client,"message":message,"gateway":gateway,"ans":ans})
 
 def log(request):
-    log = open("logs\server.log","r")
+    log = open("logs/server.log","r")
     content = log.readlines()
     l = len(content)
     ans = []
@@ -545,7 +545,7 @@ def weather_api(request):
     return JsonResponse(info_json,safe=False)
 
 def handle_log(request):
-    log = open("..\logs\server.log","r")
+    log = open("../logs/server.log","r")
     content = log.readlines()
     l = len(content)
     ans = []

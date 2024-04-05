@@ -1,6 +1,6 @@
 import time
 from django.core.management.base import BaseCommand
-from appExpress import stream
+from appexpress import stream
      
 class Command(BaseCommand):
     help = 'Runs a background task'

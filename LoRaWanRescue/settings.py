@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'appExpress',
+    'appexpress',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +81,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': 3306,
         'USER': 'root',
-        'PASSWORD': 'yourpassword',
+        'PASSWORD': '17notloser',
     }
 }
 
@@ -138,7 +138,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',  # 修改为INFO级别
             'class': 'logging.FileHandler',
-            'filename': "C:\\Users\\cai'lun\\Desktop\\LoRaWanRescue\\logs\\server.log",
+            'filename': "../LoRaWanRescue/logs/server.log",
             'formatter': 'standard',  # 指定使用名为'standard'的格式化器
         },
     },

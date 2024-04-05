@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class AppexpressConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'appExpress'
+    name = 'appexpress'

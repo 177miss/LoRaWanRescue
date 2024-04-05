@@ -1,11 +1,11 @@
 import sys
-from appExpress.models import Message
+from appexpress.models import Message
 import requests
 import json
 import base64
 import random
 import AIchat
-from appExpress.views import send_it
+from appexpress.views import send_it
 
 
 def get_json(file_content):

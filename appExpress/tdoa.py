@@ -2,7 +2,7 @@ import ctypes
 import numpy as np
 import math
 # 加载动态链接库
-lib = ctypes.CDLL("appExpress/tdoa.so")  # 替换成你实际的动态链接库文件名
+lib = ctypes.CDLL("appexpress/tdoa.so")  # 替换成你实际的动态链接库文件名
 
 # 指定函数的参数和返回类型
 lib.tdoa_cal.argtypes =[np.ctypeslib.ndpointer(dtype=np.float64,flags="C_CONTIGUOUS"),np.ctypeslib.ndpointer(dtype=np.float64,flags="C_CONTIGUOUS"),ctypes.c_int,np.ctypeslib.ndpointer(dtype=np.float64,flags="C_CONTIGUOUS")]
